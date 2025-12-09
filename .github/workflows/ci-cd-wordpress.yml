@@ -1,0 +1,45 @@
+name: CI-CD WordPress con Docker y Análisis Estático
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build_and_scan:
+    name: Construir imagen y ejecutar análisis estático
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Ver versión de Docker
+        run: docker --version
+
+      - name: Construir imagen Docker de WordPress
+        run: |
+          docker build -t wordpress-ci:latest .
+
+      - name: Ejecutar contenedores con docker-compose (solo prueba rápida)
+        run: |
+          docker compose up -d
+          docker ps
+          docker compose down
+
+      # ANÁLISIS ESTÁTICO CON TRIVY SOBRE LA IMAGEN
+      - name: Instalar y ejecutar Trivy (análisis estático de la imagen)
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: 'wordpress-ci:latest'
+          format: 'table'
+          exit-code: '0'        # no falla el pipeline aunque encuentre vulnerabilidades
+          ignore-unfixed: true
+
+      # (OPCIONAL) ANÁLISIS ESTÁTICO DEL CÓDIGO FUENTE
+      # Aquí podrías integrar otra herramienta como Semgrep si quisieras profundizar
+      # - name: Ejecutar análisis estático del código con Semgrep
+      #   uses: returntocorp/semgrep-action@v1
+      #   with:
+      #     config: 'p/default'
