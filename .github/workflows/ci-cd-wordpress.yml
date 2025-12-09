@@ -37,9 +37,3 @@ jobs:
           exit-code: '0'        # no falla el pipeline aunque encuentre vulnerabilidades
           ignore-unfixed: true
 
-      # (OPCIONAL) ANÁLISIS ESTÁTICO DEL CÓDIGO FUENTE
-      # Aquí podrías integrar otra herramienta como Semgrep si quisieras profundizar
-      # - name: Ejecutar análisis estático del código con Semgrep
-      #   uses: returntocorp/semgrep-action@v1
-      #   with:
-      #     config: 'p/default'
